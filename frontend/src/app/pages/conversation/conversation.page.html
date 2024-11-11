@@ -1,0 +1,150 @@
+<ion-content [fullscreen]="true">
+
+    <div class="background-green">
+
+
+        <div class="main-container">
+            <div class="left-container">
+
+                <!--header -->
+                <div class="header">
+                    <div class="user-img">
+                        <img class="dp" src="{{userImage}}" alt="">
+                    </div>
+                    <div class="nav-icons">
+                        <ul class="action-list">
+                            <li><i class="ri-group-2-fill"></i></li>
+                            <li><i class="ri-surround-sound-line"></i></li>
+                            <li class="dropdown">
+                                <i class="ri-more-2-fill dots"></i>
+                                <ul class="dropdown-menu">
+                                    <li (click)="openProfileModal()"><a>My Profile</a></li>
+                                    <li><a>Log out</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!--search-container -->
+                <div class="search-container">
+                    <div class="input">
+                        <i class="ri-search-2-line"></i>
+                        <input type="text" placeholder="Search or start new chat   ">
+                    </div>
+                    <i class="fa-sharp fa-solid fa-bars-filter"></i>
+                </div>
+
+
+                <!--chats -->
+                <div class="chat-list">
+                    <div class="chat-box" [ngClass]="{'active': user._id == activeUser}" *ngFor="let user of allUsers"
+                        (click)="changeConversation(user)">
+                        <div class="img-box">
+                            <img class="img-cover" src="{{user?.image}}" alt="">
+                        </div>
+                        <div class="chat-details">
+                            <div class="text-head">
+                                <h4>{{user?.name}}</h4>
+                                <p class="time unread">11:49</p>
+                            </div>
+                            <div class="text-message">
+                                <p>“How are you?”</p>
+                                <b>1</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
+            <div class="right-container" *ngIf="friendImage">
+                <!--header -->
+                <div class="header">
+                    <div class="img-text">
+                        <div class="user-img">
+                            <img class="dp" src="{{friendImage}}" alt="">
+                        </div>
+                        <h4>{{friendName}}<br>
+                            <!-- <span>{{onlineStatus}}</span><br> -->
+                            <span *ngIf="friendId == typingForId">Typing...</span>
+                            <span *ngIf="friendId != typingForId ">{{onlineStatus}}</span>
+
+                        </h4><br>
+                    </div>
+                    <div class="nav-icons">
+
+                        <ul class="action-list">
+                            <li><i class="ri-video-on-fill"></i></li>
+                            <li><i class="ri-search-2-line"></i></li>
+                            <li class="dropdown">
+                                <i class="ri-more-2-fill dots"></i>
+                                <ul class="dropdown-menu">
+                                    <li><a>Contact info</a></li>
+                                    <li><a>Select messages</a></li>
+                                    <li><a>Close chat</a></li>
+                                    <li><a>Mute notifications</a></li>
+                                    <li><a>Disappearing messages</a></li>
+                                    <li><a>Clear chat</a></li>
+                                    <li><a>Delete chat</a></li>
+                                    <li><a>Report</a></li>
+                                    <li><a>Block</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!--chat-container -->
+                <div class="chat-container" #content>
+                    <div class="message-box" *ngFor="let message of messages"
+                        [ngClass]="{'my-message': message.senderId == userId, 'friend-message': message.senderId != userId}">
+                        <p>{{ message.message }}<br>
+                            <audio *ngIf="message.audio" controls [src]="message.audio"></audio>
+                            <span>07:43</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!--input-bottom -->
+                <!-- <div class="chatbox-input">
+                    <i class="ri-emoji-sticker-line"></i>
+                    <i class="ri-attachment-2"></i>
+
+                    <input type="text" placeholder="Type a message" value="{{newMessage}}"
+                        (keyup)="typeMessage($event)">
+                    <button type="button" (click)="sendMessage()"><i class="ri-send-plane-fill"></i></button>
+                    <div class="recorder">
+                        <button (mousedown)="startRecording()" (mouseup)="stopRecording()"
+                            [ngClass]="{'active': isRecording}">
+                            <i class="ri-mic-line"></i>
+                        </button>
+                    </div>
+                </div> -->
+                <form (ngSubmit)="sendMessage()">
+                    <div class="chatbox-input">
+                        <i class="ri-emoji-sticker-line"></i>
+                        <i class="ri-attachment-2"></i>
+                        <input type="text" class="form-control" placeholder="Type your message here..."
+                            (input)="onTyping()" (blur)="stopTyping()" name="message" [(ngModel)]="message" />
+                        <button type="submit"><i class="ri-send-plane-fill"></i></button>
+                        <div class="actions">
+                            <i class="ri-mic-line"></i>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="right-container" *ngIf="!friendImage">
+                <div class="image-container">
+                    <img src="../../../assets/wa669aeJeom.png" alt="WhatsApp Logo" class="whatsapp-logo">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</ion-content>

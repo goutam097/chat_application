@@ -1,0 +1,25 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Blank
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Blank</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+
+  <div class="container">
+    <h1>Upload Video and Take Screenshot</h1>
+    <input type="file" (change)="onVideoUpload($event)" accept="video/*">
+    <video #video width="600" controls></video>
+    <canvas #canvas width="600" style="display:none;"></canvas>
+    <img #screenshot alt="Screenshot will appear here">
+  </div>
+  
+</ion-content>
