@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { AlertService } from 'src/app/service/alert/alert.service';
@@ -15,7 +15,6 @@ import { StaticStorageService } from 'src/app/service/local-storage/static-stora
   styleUrls: ['./conversation.page.scss'],
 })
 export class ConversationPage implements OnInit {
-  @ViewChild('content') private myScrollContainer: ElementRef | undefined;
 
   allUsers: any = [];
   messages: any = [];
@@ -48,7 +47,8 @@ export class ConversationPage implements OnInit {
     private router: Router,
     private modalController: ModalController,
     private localstorage: LocalStorageService,
-    private staticStorage: StaticStorageService
+    private staticStorage: StaticStorageService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -73,16 +73,29 @@ export class ConversationPage implements OnInit {
         this.connectedUsers = users;
       });
 
-      this.socket.on('message', (messagDetails: any) => {
-        this.messages.push(messagDetails);
-      });
+      // this.socket.on('message', (messagDetails: any) => {
+      //   this.messages.push(messagDetails);
+      // });
 
       this.socket.on('audio', (audio: any) => {
         this.messages.push(audio);
       });
 
+      // this.socket.on('allMessages', (messages: any) => {
+      //   this.messages = messages;
+      //   this.scrollToBottom();
+      // });
+
+      this.socket.on('message', (messageDetails: any) => {
+        this.messages.push(messageDetails);
+        this.cdr.detectChanges(); 
+        this.scrollToBottom();  
+      });
+  
       this.socket.on('allMessages', (messages: any) => {
         this.messages = messages;
+        console.log(this.messages)
+        this.cdr.detectChanges();  
         this.scrollToBottom();
       });
 
@@ -102,25 +115,12 @@ export class ConversationPage implements OnInit {
     }
   }
 
+  
+
   scrollToBottom() {
-    try {
-      setTimeout(() => {
-        if (this.myScrollContainer && this.myScrollContainer.nativeElement) {
-          this.myScrollContainer.nativeElement.scrollTop =
-            this.myScrollContainer.nativeElement.scrollHeight;
-          this.socket.emit('seen-message', {
-            receiverId: this.friendId,
-            conversationId: this.conversationId,
-          });
-          this.messages.forEach((message: any) => {
-            if (message.conversationId === this.conversationId) {
-              message.isSeen = true;
-            }
-          });
-        }
-      }, 50);
-    } catch (err) {
-      console.log(err);
+    const content = document.querySelector('.chat-container');
+    if (content) {
+      content.scrollTop = content.scrollHeight;
     }
   }
 
@@ -174,33 +174,23 @@ export class ConversationPage implements OnInit {
     }
   }
 
-  // typeMessage(ev: any) {
-  //   this.newMessage = ev.target.value;
-  // }
-
-  // async sendMessage() {
-  //   const payload = {
-  //     senderId: this.userId,
-  //     receiverId: this.friendId,
-  //     message: this.newMessage,
-  //     conversationId: this.conversationId,
-  //   };
-
-  //   this.socket.emit('message', payload);
-  //   this.messages.push(payload);
-  //   this.newMessage = '';
-  // }
+  
 
   async sendMessage() {
-      if (this.message && this.message.trim()) {
-        const json = {
-          senderId: this.userId, 
-          receiverId: this.friendId, 
-          conversationId: this.conversationId || null,
-          message: this.message,
-        };
-        await this.socket.emit('message', json);
-        this.message = null;
+    if (this.newMessage && this.newMessage.trim()) {
+      const json = {
+        senderId: this.userId,
+        receiverId: this.friendId,
+        conversationId: this.conversationId || null,
+        message: this.newMessage,
+      };
+      await this.socket.emit('message', json);
+
+      this.messages.push(json);
+      this.cdr.detectChanges();  
+
+      this.newMessage = null;
+      this.scrollToBottom();  
     }
   }
   
@@ -292,5 +282,29 @@ export class ConversationPage implements OnInit {
       this.socket.emit('stop-typing', { conversationId: this.conversationId });
       this.isTyping = false;
     }
+  }
+
+
+  toggleOptions(message: any) {
+    message.showMenu = !message.showMenu;
+  }
+
+  // Edit a message
+  editMessage(message: any) {
+    const newMessage = prompt('Edit your message:', message.message);
+    if (newMessage !== null) {
+      message.message = newMessage;  
+      this.socket.emit('editMessage', message);  
+    }
+    message.showMenu = false;  
+  }
+
+  // Delete a message
+  deleteMessage(messageId: any) {
+    this.socket.emit('deleteMessage', {
+      messageId: messageId,
+      senderId: this.userId,
+      conversationId: this.conversationId,
+    });
   }
 }

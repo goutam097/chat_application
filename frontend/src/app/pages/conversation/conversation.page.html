@@ -107,30 +107,31 @@
                             <audio *ngIf="message.audio" controls [src]="message.audio"></audio>
                             <span>07:43</span>
                         </p>
+
+                        <!-- Options icon (three dots) for the current user's messages -->
+                        <div *ngIf="message.senderId === userId" class="message-options"
+                            (click)="toggleOptions(message)">
+                            <span class="options-icon">⋮</span>
+                        </div>
+
+                        <!-- Message Options Menu: Displayed over the message -->
+                        <div class="message-options-menu" *ngIf="message.showMenu">
+                            <ul>
+                                <li (click)="editMessage(message)">Edit</li>
+                                <li (click)="deleteMessage(message._id)">Delete</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
                 <!--input-bottom -->
-                <!-- <div class="chatbox-input">
-                    <i class="ri-emoji-sticker-line"></i>
-                    <i class="ri-attachment-2"></i>
 
-                    <input type="text" placeholder="Type a message" value="{{newMessage}}"
-                        (keyup)="typeMessage($event)">
-                    <button type="button" (click)="sendMessage()"><i class="ri-send-plane-fill"></i></button>
-                    <div class="recorder">
-                        <button (mousedown)="startRecording()" (mouseup)="stopRecording()"
-                            [ngClass]="{'active': isRecording}">
-                            <i class="ri-mic-line"></i>
-                        </button>
-                    </div>
-                </div> -->
                 <form (ngSubmit)="sendMessage()">
                     <div class="chatbox-input">
                         <i class="ri-emoji-sticker-line"></i>
                         <i class="ri-attachment-2"></i>
                         <input type="text" class="form-control" placeholder="Type your message here..."
-                            (input)="onTyping()" (blur)="stopTyping()" name="message" [(ngModel)]="message" />
+                            (input)="onTyping()" (blur)="stopTyping()" name="newMessage" [(ngModel)]="newMessage" />
                         <button type="submit"><i class="ri-send-plane-fill"></i></button>
                         <div class="actions">
                             <i class="ri-mic-line"></i>

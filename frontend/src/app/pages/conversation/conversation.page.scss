@@ -527,3 +527,47 @@ img {
 audio {
   margin-top: 10px;
 }
+
+
+/* Style for the message options icon */
+.message-options {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  cursor: pointer;
+}
+
+/* Style for the three-dot icon */
+.options-icon {
+  font-size: 20px;
+  color: gray;
+}
+
+/* The options menu */
+.message-options-menu {
+  position: absolute;
+  top: 0;
+  right: 30px;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 120px;
+  z-index: 10;
+}
+
+/* List items inside the options menu */
+.message-options-menu ul {
+  list-style: none;
+  padding: 5px 0;
+  margin: 0;
+}
+
+.message-options-menu ul li {
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.message-options-menu ul li:hover {
+  background-color: #f0f0f0;
+}

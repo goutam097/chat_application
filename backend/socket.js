@@ -40,5 +40,31 @@ module.exports = (server) => {
               conversationId: data.conversationId,
             });
           });
+
+        //   socket.on("deleteMessage", async (data) => {
+        //     const newMessage = await messageService.deleteMessage(data)
+        //     socket.to(data.conversationId).emit("deleteMessage", newMessage)
+        // })
+
+        // socket.on("delete-message", async ({messageId, senderId, conversationId}) => {
+        //     await this.gateWayService.deleteMessage(messageId, senderId);
+        //     const getMessage = await this.gateWayService.getMessagesFromChat(
+        //       conversationId,
+        //       1,
+        //       1000
+        //     );
+        //     this.server.to(conversationId).emit("chat-messages", getMessage);
+        //   });
+
+
+
+
+
+
+
+
+
+
+
     })
 }
