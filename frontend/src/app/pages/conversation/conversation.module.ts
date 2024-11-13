@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { ConversationPageRoutingModule } from './conversation-routing.module';
 
 import { ConversationPage } from './conversation.page';
+import { PipeModule } from 'src/app/pipe/pipe/pipe.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ConversationPageRoutingModule
+    ConversationPageRoutingModule,
+    PipeModule
   ],
   declarations: [ConversationPage]
 })

@@ -7,6 +7,8 @@ import { ProfileDetailsPage } from '../profile-details/profile-details.page';
 import io from 'socket.io-client';
 import { LocalStorageService } from 'src/app/service/local-storage/local-storage.service';
 import { StaticStorageService } from 'src/app/service/local-storage/static-storage.service';
+import { EditMessageModalPage } from '../edit-message-modal/edit-message-modal.page';
+import { CreateGroupPage } from '../create-group/create-group.page';
 // import { ChatServiceService } from 'src/app/service/chat/chat-service.service';
 // import Recorder from 'recorder-js';
 @Component({
@@ -39,6 +41,7 @@ export class ConversationPage implements OnInit {
   isTyping: boolean = false;
   typingTimeout: any;
   message: any;
+  filteredUsers: any = [];
 
 
   constructor(
@@ -134,6 +137,7 @@ export class ConversationPage implements OnInit {
         const res = JSON.parse(JSON.stringify(data));
         if (res?.status == true) {
           this.allUsers = res?.users;
+          this.filteredUsers = [...this.allUsers];
         }
       },
       (err) => {
@@ -290,21 +294,72 @@ export class ConversationPage implements OnInit {
   }
 
   // Edit a message
-  editMessage(message: any) {
-    const newMessage = prompt('Edit your message:', message.message);
-    if (newMessage !== null) {
-      message.message = newMessage;  
-      this.socket.emit('editMessage', message);  
-    }
-    message.showMenu = false;  
+ async editMessage(message: any) {
+    const modal = await this.modalController.create({
+      component: EditMessageModalPage,
+      backdropDismiss: false,
+      cssClass: 'edit_modal',
+      componentProps: {
+        message
+      },
+    });
+    modal.onDidDismiss().then((e) => {
+      if (e?.data) {
+        this.socket.emit('edit-message', {
+            messageId: message._id,
+            senderId: this.userId,
+            message: e?.data,
+            conversationId: this.conversationId,
+          }); 
+      }
+      console.log(e.data,'message')
+    });
+    return await modal.present();  
   }
 
   // Delete a message
   deleteMessage(messageId: any) {
-    this.socket.emit('deleteMessage', {
+    this.socket.emit('delete-message', {
       messageId: messageId,
       senderId: this.userId,
       conversationId: this.conversationId,
     });
+  }
+
+  logout(){
+    this.socket.disconnect();
+    this.localstorage.logout();
+    this.router.navigate(['/login']);
+  }
+
+  searchUser(ev:any){
+    console.log(ev.target.value)
+    const query = ev.target.value.toLowerCase();
+        this.filteredUsers = this.allUsers.filter((user:any) =>
+            user.name.toLowerCase().includes(query)
+        );
+  }
+
+  // create-group 
+  async createGroup() {
+    const modal = await this.modalController.create({
+      component: CreateGroupPage,
+      backdropDismiss: false,
+      cssClass: 'edit_group_modal',
+      componentProps: {
+      },
+    });
+    // modal.onDidDismiss().then((e) => {
+    //   if (e?.data) {
+    //     this.socket.emit('edit-message', {
+    //         messageId: message._id,
+    //         senderId: this.userId,
+    //         message: e?.data,
+    //         conversationId: this.conversationId,
+    //       }); 
+    //   }
+    //   console.log(e.data,'message')
+    // });
+    return await modal.present();  
   }
 }

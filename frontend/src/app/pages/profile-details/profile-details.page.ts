@@ -118,9 +118,7 @@ export class ProfileDetailsPage implements OnInit {
     try {
       const data = await this.dataServe.postMethod(formData, `auth/updateDetails/${this.userId}`);
       const res = JSON.parse(JSON.stringify(data));
-      if (res.code === 201) {
-        form.resetForm();
-        this.profileImage = null; 
+      if (res) {
         this.modalController.dismiss();
         this.alertServe.presentToast('Profile updated successfully.');
       }

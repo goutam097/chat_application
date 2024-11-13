@@ -35,6 +35,14 @@ const routes: Routes = [
     path: 'profile-details',
     loadChildren: () => import('./pages/profile-details/profile-details.module').then( m => m.ProfileDetailsPageModule)
   },
+  {
+    path: 'edit-message-modal',
+    loadChildren: () => import('./pages/edit-message-modal/edit-message-modal.module').then( m => m.EditMessageModalPageModule)
+  },
+  {
+    path: 'create-group',
+    loadChildren: () => import('./pages/create-group/create-group.module').then( m => m.CreateGroupPageModule)
+  },
 ];
 
 @NgModule({

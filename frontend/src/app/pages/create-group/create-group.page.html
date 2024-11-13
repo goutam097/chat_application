@@ -1,0 +1,57 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title><span (click)="closeModal()"><i style="margin-right: 17px;padding-left: 18px;"
+          class="ri-close-large-line"></i></span>create-group</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" *ngIf="!isGroupSelected">
+  <div class="search-container">
+    <div class="input">
+      <i class="ri-search-2-line"></i>
+      <input type="text" placeholder="Search or start new chat" (keyup)="searchUser($event)">
+    </div>
+    <i class="fa-sharp fa-solid fa-bars-filter"></i>
+  </div>
+
+  <!-- Chat list container -->
+  <div class="chat-list">
+    <div class="chat-box" *ngFor="let user of filteredUsers" (click)="selectUser(user)">
+      <ion-item lines="none" class="user-item">
+        <ion-avatar slot="start">
+          <img [src]="user.image " alt="User Image" />
+        </ion-avatar>
+        <ion-label>
+          <h4>{{user.name}}</h4>
+        </ion-label>
+        <ion-checkbox slot="end" [(ngModel)]="user.isSelected" (ionChange)="onCheckboxChange(user)"></ion-checkbox>
+      </ion-item>
+    </div>
+  </div>
+
+  <div class="submit-button">
+    <button (click)="selectGroupMembers()">Submit</button>
+  </div>
+</ion-content>
+
+<ion-content [fullscreen]="true" *ngIf="isGroupSelected">
+  <div class="container">
+    <h2>Create Group</h2>
+    
+    <!-- Upload Image Section -->
+    <div class="upload-image">
+      <ion-icon name="image-outline"></ion-icon>
+      <input type="file" accept="image/*" />
+    </div>
+    
+    <!-- Group Subject Input -->
+    <div class="group-subject">
+      <ion-input type="text" placeholder="Group Subject"></ion-input>
+      <ion-icon name="happy-outline" class="emoji-icon"></ion-icon>
+    </div>
+
+    <!-- Create Group Button -->
+    <ion-button expand="block" class="create-group-button">Create Group</ion-button>
+  </div>
+</ion-content>
+

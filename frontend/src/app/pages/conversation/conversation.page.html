@@ -13,13 +13,13 @@
                     </div>
                     <div class="nav-icons">
                         <ul class="action-list">
-                            <li><i class="ri-group-2-fill"></i></li>
+                            <li (click)="createGroup()"><i class="ri-group-2-fill"></i></li>
                             <li><i class="ri-surround-sound-line"></i></li>
                             <li class="dropdown">
                                 <i class="ri-more-2-fill dots"></i>
                                 <ul class="dropdown-menu">
                                     <li (click)="openProfileModal()"><a>My Profile</a></li>
-                                    <li><a>Log out</a></li>
+                                    <li (click)="logout()"><a>Log out</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -30,7 +30,7 @@
                 <div class="search-container">
                     <div class="input">
                         <i class="ri-search-2-line"></i>
-                        <input type="text" placeholder="Search or start new chat   ">
+                        <input type="text" placeholder="Search or start new chat" (keyup)="searchUser($event)">
                     </div>
                     <i class="fa-sharp fa-solid fa-bars-filter"></i>
                 </div>
@@ -38,7 +38,7 @@
 
                 <!--chats -->
                 <div class="chat-list">
-                    <div class="chat-box" [ngClass]="{'active': user._id == activeUser}" *ngFor="let user of allUsers"
+                    <div class="chat-box" [ngClass]="{'active': user._id == activeUser}" *ngFor="let user of filteredUsers"
                         (click)="changeConversation(user)">
                         <div class="img-box">
                             <img class="img-cover" src="{{user?.image}}" alt="">
@@ -104,8 +104,7 @@
                     <div class="message-box" *ngFor="let message of messages"
                         [ngClass]="{'my-message': message.senderId == userId, 'friend-message': message.senderId != userId}">
                         <p>{{ message.message }}<br>
-                            <audio *ngIf="message.audio" controls [src]="message.audio"></audio>
-                            <span>07:43</span>
+                            <span>{{message?.createdAt | datetimeago}}</span>
                         </p>
 
                         <!-- Options icon (three dots) for the current user's messages -->

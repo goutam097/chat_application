@@ -1,0 +1,146 @@
+.search-container {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f1f1f1;
+  
+    .input {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      background: #fff;
+      padding: 8px;
+      border-radius: 8px;
+  
+      input {
+        border: none;
+        outline: none;
+        flex: 1;
+        padding-left: 10px;
+      }
+    }
+  
+    .fa-bars-filter {
+      margin-left: 10px;
+      font-size: 20px;
+    }
+  }
+  
+  .chat-list {
+    padding: 10px;
+  
+    .chat-box {
+      margin-bottom: 8px;
+    }
+  
+    .user-item {
+      --padding-start: 10px;
+      --inner-padding-end: 5px;
+  
+      ion-avatar {
+        width: 40px;
+        height: 40px;
+      }
+  
+      ion-label h4 {
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+  }
+  
+
+  .submit-button {
+    position: absolute;
+    top: 60%; /* Adjust this to position below middle */
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .submit-button button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .submit-button button:hover {
+    background-color: #0056b3;
+  }
+  
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .upload-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    border: 2px dashed #c4c4c4;
+    border-radius: 50%;
+    color: #666;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .upload-image ion-icon {
+    font-size: 50px;
+    color: #999;
+  }
+  
+  .upload-image input[type="file"] {
+    opacity: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+  
+  .group-subject {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  
+  .group-subject ion-input {
+    width: 100%;
+    padding-right: 40px;
+  }
+  
+  .emoji-icon {
+    font-size: 24px;
+    color: #666;
+    position: absolute;
+    right: 10px;
+  }
+  
+  .create-group-button {
+    --background: #3880ff;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    max-width: 300px;
+  }
+  

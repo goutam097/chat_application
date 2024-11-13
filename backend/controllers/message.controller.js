@@ -26,11 +26,11 @@ module.exports.createConversation = async (req, res) => {
 module.exports.messagesForConversation = async (conversationId) => {
     // console.log(conversationId,'conversationId')
     try {
-        const messages = await Message.find({ conversationId: conversationId }).lean(); 
+        const messages = await Message.find({ conversationId: conversationId }).lean();
 
         messages.forEach((message) => {
             if (message.audio) {
-                message.audio = message.audio.toString('base64'); 
+                message.audio = message.audio.toString('base64');
             }
         });
 
@@ -49,3 +49,47 @@ module.exports.CreateNewMessages = async (body) => {
         return {}
     }
 };
+
+module.exports.deleteMessage = async (messageId, senderId) => {
+    console.log(messageId, senderId, 'messageId, senderId');
+    try {
+        const messageDetails = await Message.findOne({ _id: messageId, senderId });
+        if (messageDetails) {
+            await Message.deleteOne({ _id: messageId, senderId });
+            return { message: "Message deleted successfully." };
+        } else {
+            return { message: "Message not found." };
+        }
+    } catch (error) {
+        console.error("Error deleting message:", error);
+        return { message: "Something went wrong." };
+    }
+};
+
+module.exports.editMessage = async (messageId, senderId, message) => {
+    try {
+      const messageDetails = await Message.findOne({
+        _id: messageId,
+        senderId: senderId,
+      });
+  
+      if (messageDetails) {
+        await Message.updateOne(
+          {
+            _id: messageId,
+            senderId: senderId,
+          },
+          {
+            message: message,
+            updated_at: new Date(),
+          }
+        );
+        return { message: "Message updated successfully." };
+      } else {
+        return { message: "Message not found." };
+      }
+    } catch (error) {
+      console.log("error:", error);
+      return { message: "An error occurred." };
+    }
+  };

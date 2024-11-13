@@ -1,0 +1,17 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title ><span (click)="closeModal()"><i style="margin-right: 17px;padding-left: 18px;" class="ri-close-large-line"></i></span>Edit Message</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <div class="dynamicText" style="margin-top: 33px;">
+      <label>{{message}}</label>
+    </div>
+    <div class="input-group">
+      <input type="text" placeholder="Enter text here..." name="message" [(ngModel)]="message" />
+      <button type="button" (click)="handleSubmit()">Submit</button>
+    </div>
+  </div>
+</ion-content>

@@ -36,25 +36,30 @@ module.exports = (server) => {
 
         socket.on('stop-typing', (data) => {
             io.to(data.conversationId).emit('user-stop-typing', {
-              userId: data.userId,
-              conversationId: data.conversationId,
+                userId: data.userId,
+                conversationId: data.conversationId,
             });
-          });
+        });
 
-        //   socket.on("deleteMessage", async (data) => {
-        //     const newMessage = await messageService.deleteMessage(data)
-        //     socket.to(data.conversationId).emit("deleteMessage", newMessage)
-        // })
+        socket.on("delete-message", async ({ messageId, senderId, conversationId }) => {
+            // console.log("Deleting message:", messageId, senderId, conversationId);
 
-        // socket.on("delete-message", async ({messageId, senderId, conversationId}) => {
-        //     await this.gateWayService.deleteMessage(messageId, senderId);
-        //     const getMessage = await this.gateWayService.getMessagesFromChat(
-        //       conversationId,
-        //       1,
-        //       1000
-        //     );
-        //     this.server.to(conversationId).emit("chat-messages", getMessage);
-        //   });
+            await messageService.deleteMessage(messageId, senderId);
+            const updatedMessages = await messageService.messagesForConversation(conversationId);
+            socket.to(conversationId).emit("allMessages", updatedMessages);
+        });
+
+        socket.on(
+            "edit-message",
+            async ({ messageId, senderId, conversationId, message }) => {
+                console.log(message)
+                await messageService.editMessage(messageId, senderId, message);
+                const updatedMessages = await messageService.messagesForConversation(conversationId);
+                socket.to(conversationId).emit("allMessages", updatedMessages);
+            }
+        );
+
+
 
 
 
