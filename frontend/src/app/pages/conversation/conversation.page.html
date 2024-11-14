@@ -127,7 +127,7 @@
 
                 <form (ngSubmit)="sendMessage()">
                     <div class="chatbox-input">
-                        <i class="ri-emoji-sticker-line"></i>
+                        <i class="ri-emoji-sticker-line" (click)="toggleEmojiPicker('comment')"></i>
                         <i class="ri-attachment-2"></i>
                         <input type="text" class="form-control" placeholder="Type your message here..."
                             (input)="onTyping()" (blur)="stopTyping()" name="newMessage" [(ngModel)]="newMessage" />

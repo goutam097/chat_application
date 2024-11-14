@@ -1,4 +1,11 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { AlertService } from 'src/app/service/alert/alert.service';
@@ -9,6 +16,7 @@ import { LocalStorageService } from 'src/app/service/local-storage/local-storage
 import { StaticStorageService } from 'src/app/service/local-storage/static-storage.service';
 import { EditMessageModalPage } from '../edit-message-modal/edit-message-modal.page';
 import { CreateGroupPage } from '../create-group/create-group.page';
+import { EmojiPickerComponent } from 'src/app/components/emoji-picker/emoji-picker';
 // import { ChatServiceService } from 'src/app/service/chat/chat-service.service';
 // import Recorder from 'recorder-js';
 @Component({
@@ -17,6 +25,8 @@ import { CreateGroupPage } from '../create-group/create-group.page';
   styleUrls: ['./conversation.page.scss'],
 })
 export class ConversationPage implements OnInit {
+  @ViewChild('commentInputRef') commentInputRef: ElementRef | undefined;
+  @ViewChild('commentEmojiPicker') commentEmojiPicker: EmojiPickerComponent | any;
 
   allUsers: any = [];
   messages: any = [];
@@ -43,7 +53,6 @@ export class ConversationPage implements OnInit {
   message: any;
   filteredUsers: any = [];
 
-
   constructor(
     private dataServe: DataService,
     private alertServe: AlertService,
@@ -51,7 +60,8 @@ export class ConversationPage implements OnInit {
     private modalController: ModalController,
     private localstorage: LocalStorageService,
     private staticStorage: StaticStorageService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private renderer: Renderer2
   ) {}
 
   async ngOnInit() {
@@ -91,14 +101,14 @@ export class ConversationPage implements OnInit {
 
       this.socket.on('message', (messageDetails: any) => {
         this.messages.push(messageDetails);
-        this.cdr.detectChanges(); 
-        this.scrollToBottom();  
+        this.cdr.detectChanges();
+        this.scrollToBottom();
       });
-  
+
       this.socket.on('allMessages', (messages: any) => {
         this.messages = messages;
-        console.log(this.messages)
-        this.cdr.detectChanges();  
+        console.log(this.messages);
+        this.cdr.detectChanges();
         this.scrollToBottom();
       });
 
@@ -117,8 +127,6 @@ export class ConversationPage implements OnInit {
       });
     }
   }
-
-  
 
   scrollToBottom() {
     const content = document.querySelector('.chat-container');
@@ -178,8 +186,6 @@ export class ConversationPage implements OnInit {
     }
   }
 
-  
-
   async sendMessage() {
     if (this.newMessage && this.newMessage.trim()) {
       const json = {
@@ -191,13 +197,13 @@ export class ConversationPage implements OnInit {
       await this.socket.emit('message', json);
 
       this.messages.push(json);
-      this.cdr.detectChanges();  
+      this.cdr.detectChanges();
 
       this.newMessage = null;
-      this.scrollToBottom();  
+      this.scrollToBottom();
     }
   }
-  
+
   async startRecording() {
     // console.log('kstart');
     navigator.mediaDevices
@@ -257,9 +263,7 @@ export class ConversationPage implements OnInit {
       component: ProfileDetailsPage,
       backdropDismiss: false,
       cssClass: 'user_modal',
-      componentProps: {
-        
-      },
+      componentProps: {},
     });
     return await modal.present();
   }
@@ -288,33 +292,32 @@ export class ConversationPage implements OnInit {
     }
   }
 
-
   toggleOptions(message: any) {
     message.showMenu = !message.showMenu;
   }
 
   // Edit a message
- async editMessage(message: any) {
+  async editMessage(message: any) {
     const modal = await this.modalController.create({
       component: EditMessageModalPage,
       backdropDismiss: false,
       cssClass: 'edit_modal',
       componentProps: {
-        message
+        message,
       },
     });
     modal.onDidDismiss().then((e) => {
       if (e?.data) {
         this.socket.emit('edit-message', {
-            messageId: message._id,
-            senderId: this.userId,
-            message: e?.data,
-            conversationId: this.conversationId,
-          }); 
+          messageId: message._id,
+          senderId: this.userId,
+          message: e?.data,
+          conversationId: this.conversationId,
+        });
       }
-      console.log(e.data,'message')
+      console.log(e.data, 'message');
     });
-    return await modal.present();  
+    return await modal.present();
   }
 
   // Delete a message
@@ -326,28 +329,27 @@ export class ConversationPage implements OnInit {
     });
   }
 
-  logout(){
+  logout() {
     this.socket.disconnect();
     this.localstorage.logout();
     this.router.navigate(['/login']);
   }
 
-  searchUser(ev:any){
-    console.log(ev.target.value)
+  searchUser(ev: any) {
+    console.log(ev.target.value);
     const query = ev.target.value.toLowerCase();
-        this.filteredUsers = this.allUsers.filter((user:any) =>
-            user.name.toLowerCase().includes(query)
-        );
+    this.filteredUsers = this.allUsers.filter((user: any) =>
+      user.name.toLowerCase().includes(query)
+    );
   }
 
-  // create-group 
+  // create-group
   async createGroup() {
     const modal = await this.modalController.create({
       component: CreateGroupPage,
       backdropDismiss: false,
       cssClass: 'edit_group_modal',
-      componentProps: {
-      },
+      componentProps: {},
     });
     // modal.onDidDismiss().then((e) => {
     //   if (e?.data) {
@@ -356,10 +358,30 @@ export class ConversationPage implements OnInit {
     //         senderId: this.userId,
     //         message: e?.data,
     //         conversationId: this.conversationId,
-    //       }); 
+    //       });
     //   }
     //   console.log(e.data,'message')
     // });
-    return await modal.present();  
+    return await modal.present();
+  }
+
+  toggleEmojiPicker(type: string): void {
+    console.log(type)
+    console.log(this.commentEmojiPicker)
+    if (type == 'comment' && this.commentEmojiPicker) {
+      // Open the emoji picker
+      this.commentEmojiPicker.openEmojiPicker();
+
+      // Use Renderer2 to manipulate the DOM
+      const emojiPicker = this.commentInputRef?.nativeElement.parentNode.querySelector('.emojiPicker');
+      
+      // Check if emojiPicker is found and toggle visibility
+      if (emojiPicker) {
+        this.renderer.setStyle(emojiPicker, 'display', 'block');
+      }
+    } else {
+      // Optionally log or handle if commentEmojiPicker is not available
+      console.error('Emoji Picker is not available!');
+    }
   }
 }

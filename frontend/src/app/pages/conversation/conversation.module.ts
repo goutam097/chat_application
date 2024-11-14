@@ -8,6 +8,7 @@ import { ConversationPageRoutingModule } from './conversation-routing.module';
 
 import { ConversationPage } from './conversation.page';
 import { PipeModule } from 'src/app/pipe/pipe/pipe.module';
+import { ComponentModule } from 'src/app/components/component/component.module';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { PipeModule } from 'src/app/pipe/pipe/pipe.module';
     FormsModule,
     IonicModule,
     ConversationPageRoutingModule,
-    PipeModule
+    PipeModule,
+    ComponentModule
   ],
   declarations: [ConversationPage]
 })
