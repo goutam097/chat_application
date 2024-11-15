@@ -3,6 +3,7 @@ const cors = require("cors")
 const mongoose = require("mongoose")
 const userRoutes = require("./routes/user.route")
 const messageRoutes = require("./routes/message.route")
+const groupRoutes = require("./routes/group.route")
 const path = require('path')
 
 
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use("/api/auth", userRoutes)
 app.use("/api/chat", messageRoutes)
+app.use("/api/group", groupRoutes)
 
 mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log('MongoDb Connected Successfully...!!!')

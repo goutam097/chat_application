@@ -16,6 +16,10 @@ export class CreateGroupPage implements OnInit {
   userId: any;
   filteredUsers: any = [];
   isGroupSelected: boolean = false;
+  selectedUserIds: any = [];
+  description: any;
+  groupImage: any;
+  accessToken: any;
 
   constructor(
     private modalController: ModalController,
@@ -23,11 +27,11 @@ export class CreateGroupPage implements OnInit {
     private alertServe: AlertService,
     private router: Router,
     private localstorage: LocalStorageService,
-    private staticStorage: StaticStorageService,
-  ) { }
+    private staticStorage: StaticStorageService
+  ) {}
 
   ngOnInit() {
-    this.checkSession()
+    this.checkSession();
   }
 
   async checkSession() {
@@ -35,15 +39,16 @@ export class CreateGroupPage implements OnInit {
       .getObject(this.staticStorage.storageName)
       .then((resu) => {
         const sess = JSON.parse(resu);
-        console.log(sess,'dfdsfdssdjsd')
+        console.log(sess, 'dfdsfdssdjsd');
         if (sess !== null) {
           this.userId = sess._id;
-           this.getAllUserList();
+          this.accessToken = sess.token;
+          this.getAllUserList();
         }
       });
   }
 
-  closeModal(){
+  closeModal() {
     this.modalController.dismiss();
   }
 
@@ -65,19 +70,79 @@ export class CreateGroupPage implements OnInit {
   searchUser(event: any) {
     const query = event.target.value.toLowerCase();
     this.filteredUsers = query
-      ? this.allUsers.filter((user:any) => user.name.toLowerCase().includes(query))
-      : [...this.allUsers]; // Reset if query is empty
+      ? this.allUsers.filter((user: any) =>
+          user.name.toLowerCase().includes(query)
+        )
+      : [...this.allUsers];
   }
 
-  selectUser(user: any) {
-    user.isSelected = !user.isSelected; // Toggle selection state
+  onCheckboxChange(user: any): void {
+    if (user.isSelected) {
+      this.selectedUserIds.push(user._id);
+    } else {
+      const index = this.selectedUserIds.indexOf(user._id);
+      if (index > -1) {
+        this.selectedUserIds.splice(index, 1);
+      }
+    }
   }
 
-  onCheckboxChange(user: any) {
-    console.log(`${user.name} selection changed to: ${user.isSelected}`);
+  selectGroupMembers() {
+    this.isGroupSelected = true;
   }
 
-  selectGroupMembers(){
-    this.isGroupSelected = true
+  uploadProfileImage(event: Event) {
+    const fileInput = event.target as HTMLInputElement;
+    const file = fileInput.files?.[0];
+    const allowedTypes = ['image/jpeg', 'image/png'];
+
+    if (file && allowedTypes.includes(file.type) && file.size < 1100000) {
+      this.groupImage = { file, url: URL.createObjectURL(file) };
+      console.log(this.groupImage);
+    } else {
+      this.alertServe.presentToast(
+        'Only jpg, jpeg, and png files under 1MB are allowed.'
+      );
+    }
+  }
+
+  async createGroupApi() {
+    if (!this.description || this.selectedUserIds.size === 0) {
+      this.alertServe.presentToast(
+        'Description and at least one user are required.'
+      );
+      return;
+    }
+    const userIdsArray = Array.from(this.selectedUserIds).map((userId) => ({
+      memberId: userId,
+      isAdmin: false,
+    }));
+
+    const formData = new FormData();
+    formData.append('members', JSON.stringify(userIdsArray));
+    formData.append('description', this.description);
+
+    if (this.groupImage?.file) {
+      formData.append('image', this.groupImage.file);
+    }
+
+    try {
+      const data = await this.dataServe.postMethodWithToken(
+        formData,
+        `group/create-group`,
+        this.accessToken
+      );
+      const res = data as { status: boolean; message: string };
+      if (res?.status) {
+        this.modalController.dismiss();
+      } else {
+        this.alertServe.presentToast(res?.message || 'Failed to create group');
+      }
+    } catch (err) {
+      console.log(err);
+      this.alertServe.presentToast(
+        'An error occurred while creating the group'
+      );
+    }
   }
 }

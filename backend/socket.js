@@ -1,5 +1,6 @@
 
 const messageService = require("./controllers/message.controller");
+const groupChatService = require("./controllers/groupMessage.controller");
 
 module.exports = (server) => {
     const io = require('socket.io')(server, {
@@ -58,6 +59,25 @@ module.exports = (server) => {
                 socket.to(conversationId).emit("allMessages", updatedMessages);
             }
         );
+
+
+        ///////////////////// For Group Chat ///////////////////////
+
+    socket.on('join-group', async ({ chatId }) => {
+        socket.join(chatId);
+        const roomMessages = await groupChatService.getMessagesFromChat(chatId, 1);
+        io.to(chatId).emit("group-chat-messages", { message: roomMessages });
+      });
+  
+      socket.on('leave-group', async ({ chatId }) => {
+        socket.leave(chatId);
+      });
+  
+      socket.on('group-message', async (data) => {
+        await groupChatService.addMessage(data);
+        const roomMessages = await groupChatService.getMessagesFromChat(data.groupId, 1);
+        io.to(data.groupId).emit("group-chat-messages", { message: roomMessages });
+      });
 
 
 

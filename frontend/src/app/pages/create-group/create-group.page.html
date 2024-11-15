@@ -16,7 +16,7 @@
 
   <!-- Chat list container -->
   <div class="chat-list">
-    <div class="chat-box" *ngFor="let user of filteredUsers" (click)="selectUser(user)">
+    <div class="chat-box" *ngFor="let user of filteredUsers" >
       <ion-item lines="none" class="user-item">
         <ion-avatar slot="start">
           <img [src]="user.image " alt="User Image" />
@@ -24,7 +24,10 @@
         <ion-label>
           <h4>{{user.name}}</h4>
         </ion-label>
-        <ion-checkbox slot="end" [(ngModel)]="user.isSelected" (ionChange)="onCheckboxChange(user)"></ion-checkbox>
+        <!-- <ion-checkbox slot="end"  (ionChange)="onCheckboxChange(user)"></ion-checkbox> -->
+        <ion-checkbox slot="end" 
+                    [(ngModel)]="user.isSelected" 
+                    (ionChange)="onCheckboxChange(user)"></ion-checkbox>
       </ion-item>
     </div>
   </div>
@@ -41,17 +44,18 @@
     <!-- Upload Image Section -->
     <div class="upload-image">
       <ion-icon name="image-outline"></ion-icon>
-      <input type="file" accept="image/*" />
+      <img src="{{groupImage?.url}}" alt="">
+      <input type="file" (change)="uploadProfileImage($event)" accept="image/*" />
     </div>
     
     <!-- Group Subject Input -->
     <div class="group-subject">
-      <ion-input type="text" placeholder="Group Subject"></ion-input>
+      <ion-input type="text" name="description" [(ngModel)]="description"  placeholder="Group Subject"></ion-input>
       <ion-icon name="happy-outline" class="emoji-icon"></ion-icon>
     </div>
 
     <!-- Create Group Button -->
-    <ion-button expand="block" class="create-group-button">Create Group</ion-button>
+    <ion-button expand="block" class="create-group-button" (click)="createGroupApi()">Create Group</ion-button>
   </div>
 </ion-content>
 

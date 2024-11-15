@@ -38,6 +38,7 @@ export class LoginPage implements OnInit {
         if (res?.status == true) {
           form.resetForm();
           const userData = res?.user;
+          // const token = res?.token
           if (userData) {
              await this.localStorage.setObject(this.staticStorage.storageName, userData).then(async (data) => {
                 if (data) {
